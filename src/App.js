@@ -14,12 +14,10 @@ class App extends Component {
       ],
       newTask: '',
       temp: [],
-      activeIndex: null
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleClick = this.handleClick.bind(this);
   }
 
   handleChange(event) {
@@ -44,15 +42,6 @@ class App extends Component {
     }
   }
 
-  handleClick(event){
-    if(event.target.class === 'done'){
-      alert("done")
-    }else{
-      alert(event.target)
-    }
-  }
-
-
   render() {
     return (
       <div className="wrapper">
@@ -60,7 +49,7 @@ class App extends Component {
           <h3>Por hacer:</h3>
           <ul className="todo">
             {this.state.tasks.map((task, index) =>
-              <li key={task.id} className={task.done ? "done" : null } onClick={this.handleClick}>
+              <li key={task.id} className={task.done ? "done" : null } >
                 {task.name}
               </li>)
             }
