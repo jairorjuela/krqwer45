@@ -3,79 +3,94 @@ import React, { Component } from 'react';
 /// Modifica el componente para que se puedan agregar tareas, tachar y destacharlas y error de validacion en el input
 
 class App extends Component {
-
-  constructor() {
-    super();
+  constructor(props) {
+    super(props)
     this.state = {
+      newTask: '',
       tasks: [
         { id: 1, name: "Sacar la ropa", done: false },
         { id: 2, name: "Hacer la cama", done: true },
-        { id: 3, name: "Leer un rato", done: false },
+        { id: 3, name: "Leer un rato", done: false }
       ],
-      newTask: '',
-      temp: [],
-      done: false
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({
-      newTask: event.target.value
-    });
-  }
-
-  handleSubmit(event) {
-    if(this.state.newTask === ""){
-      this.setState({
-        categorie: "error"
-      });
-      event.preventDefault();
-    }else{
-    this.state.tasks.push({name: this.state.newTask, done: false})
-    this.setState({
-      tasks: this.state.tasks,
-      newTask: "",
-      className: false
-    });
-    event.preventDefault();
+      errors: {
+        newTask: false
+      }
     }
   }
-
-
-
-    handleToggle(e) {
-      e.preventDefault();
+  validateNewTask() {
+    if (this.state.newTask === '') {
       this.setState({
-        done: !this.state.done
+        errors: {
+          newTask: true
+        }
       })
-
+      return false
     }
-
-
+    return true
+  }
+  addTask(event) {
+    event.preventDefault()
+    if (this.validateNewTask()) {
+      let oldTasks = this.state.tasks
+      let newTask = {
+        id: Math.max(...oldTasks.map(task => task.id)) + 1,
+        name: this.state.newTask,
+        done: false
+      }
+      this.setState({
+        tasks: [...oldTasks, newTask],
+        newTask: ''
+      })
+    }
+  }
+  updateTask(event) {
+    this.setState({
+      newTask: event.target.value,
+      errors: {
+        newTask: false
+      }
+    })
+  }
+  toogleDone(id,event) {
+    const newTasks = this.state.tasks.map(task => {
+      if (task.id === id) {
+        task.done = !task.done
+        return task
+      }
+      return task
+    })
+    this.setState({
+      tasks: newTasks
+    })
+  }
+  renderTasks() {
+    const tasks = this.state.tasks.map((task, index) => {
+      return (
+        <li
+          className={task.done ? 'done' : null}
+          key={task.id}
+          onClick={this.toogleDone.bind(this, task.id)}>
+          {task.name}
+        </li>
+      )
+    })
+    return tasks
+  }
   render() {
     return (
       <div className="wrapper">
         <div className="list">
           <h3>Por hacer:</h3>
           <ul className="todo">
-            {this.state.tasks.map((task, index) =>
-              <li key={task.id} className={this.state.done ? "done" : null } onClick={(e) => this.handleToggle(e)}>
-                {task.name}
-              </li>)
-            }
+            {this.renderTasks()}
           </ul>
-          <form onSubmit={this.handleSubmit}>
-            <input type="text" id="new-task" placeholder="Ingresa una tarea y oprime Enter" value={this.state.newTask} onChange={this.handleChange} className={this.state.categorie} />
+          <form onSubmit={this.addTask.bind(this)}>
+          <input className={this.state.errors.newTask ? 'error' : null} type="text" id="new-task" placeholder="Ingresa una tarea y oprime Enter" value={this.state.newTask} onChange={this.updateTask.bind(this)}/>
           </form>
         </div>
       </div>
     )
   }
-
-
 }
 
 export default App;
