@@ -10,10 +10,11 @@ class App extends Component {
       tasks: [
         { id: 1, name: "Sacar la ropa", done: false },
         { id: 2, name: "Hacer la cama", done: true },
-        { id: 3, name: "Leer un rato", done: false }
+        { id: 3, name: "Leer un rato", done: false },
       ],
       newTask: '',
       temp: [],
+      done: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -37,10 +38,22 @@ class App extends Component {
     this.setState({
       tasks: this.state.tasks,
       newTask: "",
+      className: false
     });
     event.preventDefault();
     }
   }
+
+
+
+    handleToggle(e) {
+      e.preventDefault();
+      this.setState({
+        done: !this.state.done
+      })
+
+    }
+
 
   render() {
     return (
@@ -49,7 +62,7 @@ class App extends Component {
           <h3>Por hacer:</h3>
           <ul className="todo">
             {this.state.tasks.map((task, index) =>
-              <li key={task.id} className={task.done ? "done" : null } >
+              <li key={task.id} className={this.state.done ? "done" : null } onClick={(e) => this.handleToggle(e)}>
                 {task.name}
               </li>)
             }
